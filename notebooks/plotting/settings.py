@@ -18,7 +18,7 @@ matplotlib.rcParams["ytick.labelsize"] = 8.0
 matplotlib.rcParams["axes.titlesize"] = 10.0
 matplotlib.rcParams["axes.labelsize"] = 10.0
 matplotlib.rcParams["savefig.pad_inches"] = 0
-matplotlib.rcParams["font.font-family"] = ["sans-serif"]
+matplotlib.rcParams["font.family"] = ["Arial"]
 matplotlib.rcParams["font.sans-serif"] = ["Arial"]
 
 sc.settings._vector_friendly = False

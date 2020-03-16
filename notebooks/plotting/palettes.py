@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import numpy as np
+
 import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -26,3 +28,5 @@ neuronal_palette = (
 neuronal_nonneuronal_palette = sns.xkcd_palette(["cerulean", "kelly green"])
 
 heatmap_cmap = cmo.tools.cmap(cmo.cm.balance(np.linspace(0,1,256), 0.9))
+
+gaba_vs_glut_vs_hdc_palette = sns.xkcd_palette(["yellow orange", "medium blue", "tree green"])

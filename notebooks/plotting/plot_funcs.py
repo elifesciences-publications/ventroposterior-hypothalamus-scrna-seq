@@ -17,33 +17,22 @@ from sklearn.mixture import GaussianMixture
 from matplotlib.patches import Rectangle
 
 from string import ascii_uppercase
-from scanpy.plotting.anndata import _prepare_dataframe
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from scipy.cluster.hierarchy import linkage, ward
 from scipy.cluster.hierarchy import fcluster, leaves_list, dendrogram
 from matplotlib.collections import LineCollection
 
-from scanpy_recipes import sc
-from scanpy_recipes.read_write import get_marker_dataframe
-from scanpy_recipes.plotting.qc import _plot_thresholded_violin
-from scanpy.plotting.anndata import _prepare_dataframe
+#from scanpy_recipes import sc
+#from scanpy_recipes.read_write import get_marker_dataframe
+#from scanpy_recipes.plotting.qc import _plot_thresholded_violin
+from scanpy.plotting._anndata import _prepare_dataframe
+
+from utils.load_data import save_figure
+
+from plotting.palettes import *
+from plotting.settings import *
 
 
-current_date = datetime.now().strftime("%Y%m%d")
-outpath = Path(f"/projects/robson-lab/research/hypothalamus/final_analysis/paper/figures-{current_date}/")
-if not outpath.exists():
-    os.makedirs(outpath)
-
-def save_figure(fig, pdir, name, dpi=600, ext="pdf"):
-    out = outpath / pdir / f"{name}.{ext}"
-    pout = outpath / pdir
-    if not pout.exists():
-        pout.mkdir()
-    fig.savefig(out, dpi=dpi)#, bbox="tight")
-    print(f"Saved to {out.name}")
-
-
-from operator import add, sub
 def fix_aspect_scatter_with_legend(fig):
     changed_ylims = None
     for ax in fig.get_axes():
@@ -89,6 +78,48 @@ def add_scatter_borders(ax):
         for legend_handle in legend.legendHandles:
             legend_handle.set_edgecolors("0.6")
             legend_handle.set_linewidths([0.2])
+
+def scatter_1by2(
+    adata, genes, filename=None, figdir=None, 
+    selection=None, add_marker_edges=True, label_va="top", label_ha="left", markersize=3):
+    gs = plt.GridSpec(1, 2, wspace=0, hspace=0)
+    fig = plt.figure(figsize=(4, 4))
+    ax1 = fig.add_subplot(gs[0,0])
+    ax2 = fig.add_subplot(gs[0,1])
+    axs = (ax1, ax2)
+    
+    plot_data = adata
+    plot_params = dict(use_raw=False, show=False, title="", size=markersize, 
+                       color_map=red_colormap)
+    if selection is not None:
+        plot_data = adata[selection]
+        plot_params["size"] = 12
+
+    x = dict(left=0.05, right=0.95)[label_ha]
+    y = dict(bottom=0.05, top=0.95)[label_va]
+    for ax, gene in zip(axs, genes):
+        sc.pl.umap(plot_data, color=gene, ax=ax, **plot_params)
+        ax.text(x, y, gene, ha=label_ha, va=label_va, size="small", transform=ax.transAxes)
+
+    filtered_children = list(filter(lambda c: isinstance(c, matplotlib.axes.Axes), fig.get_children()))
+    for k, child in enumerate(filtered_children[len(axs):]):
+        fig.delaxes(child)
+
+    for ax in axs:
+        ax.set_xlabel("")
+        ax.set_ylabel("")
+        fix_aspect_scatter_with_legend(fig)
+        if add_marker_edges:
+            add_scatter_borders(ax)
+    ax1.set_ylabel("UMAP2")
+    ax1.set_xlabel("UMAP1")
+    ax2.set_xlabel("UMAP1")
+    
+    fig.tight_layout()
+    fig.subplots_adjust(wspace=0.0)
+    fig.tight_layout(rect=(0.025, 0.025, 0.975, 0.975))
+    if (filename is not None) and (figdir is not None):
+        save_figure(fig, figdir, filename)
 
 def scatter_2by2(
     adata, genes, filename=None, figdir=None, 
@@ -319,12 +350,12 @@ def get_matrix_data2(adata, markers, cluster_key, palette):
 
     return data, col_colors, row_colors
 
-def fix_heatmap_colorbar(cg, adata, heatmap_data, cmap):
+def fix_heatmap_colorbar(cg, adata, heatmap_data, cmap="vlag"):
     # remove shitty stuff
     cg.cax.remove()
     cg.ax_col_dendrogram.remove()
     cg.ax_row_dendrogram.remove()
-    cg.fig.tight_layout()
+    #cg.fig.tight_layout()
     
     # here's the hack
     big_bbox = cg.ax_heatmap.get_position()
@@ -481,12 +512,6 @@ def plot_celltype_proportions(
     return fig
 
 
-from string import ascii_uppercase
-from scanpy.plotting.anndata import _prepare_dataframe
-from sklearn.preprocessing import MinMaxScaler, StandardScaler
-from scipy.cluster.hierarchy import linkage, ward
-from scipy.cluster.hierarchy import leaves_list, dendrogram
-from matplotlib.collections import LineCollection
 
 def cluster_denodrogram(adata, groupby, palette, figdir, highly_variable=True, colored=False, prefix="neuronal"):
     inds = \

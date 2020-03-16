@@ -1,57 +1,23 @@
 #!/usr/bin/env python
 # coding: utf-8
-from scanpy_recipes import sc
+#from scanpy_recipes import sc
 import numpy as np
 import pandas as pd
+import scanpy as sc
 
 import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from plotting.plotting_funcs import *
-from utils import *
-
-
-def figure_S1b():
-    neuronal_markers = ["Snap25", "Tubb3", "Elavl2", "Syp"]
-    full_no_dub.obs["neuronal_average_exp"] = full_no_dub[:, neuronal_markers].X.mean(axis=1)
-
-    fig, ax = plt.subplots(1, 1, figsize=(4, 4))
-    sc.pl.umap(
-        full_no_dub, 
-        color="neuronal_average_exp",  
-        palette=neuronal_nonneuronal_palette,
-        title="Neuronal marker mean expression",
-        show=False,
-        color_map=red_colormap,
-        ax=ax
-    )
-    sns.despine(fig)
-    fig.get_children()[-1].set_ylabel("Log-normalized expression")
-    fix_aspect_scatter_with_cbar(fig)
-    fig.tight_layout(rect=(0.025, 0.025, 0.975, 0.975))
-    save_figure(fig, "figure_01", "fig1_neuronal-expression")
-
-
-def figure_S1c():
-    fig, ax = plt.subplots(1, 1, figsize=(4, 4))
-    sc.pl.umap(
-        full_no_dub, 
-        color="classification_cluster",  
-        palette=neuronal_nonneuronal_palette,
-        title="Neuronal Classification",
-        show=False,
-        ax=ax
-    )
-    ax.legend(bbox_to_anchor=(0.5, -0.2), ncol=2, frameon=False, loc="lower center")
-    sns.despine(fig)
-    fig.tight_layout(rect=(0.025, 0.025, 0.975, 0.975))
-    fix_aspect_scatter_with_legend(fig)
-    fig.tight_layout(rect=(0.025, 0.025, 0.975, 0.975))
-    save_figure(fig, "figure_01", "fig1_neuronal-classification")
+from plotting.settings import *
+from plotting.plot_funcs import *
+from plotting.palettes import *
+from utils.load_data import load_adata, save_figure, load_markers
 
 
 def figure_1c():
+    full_no_dub = load_adata("global_no_dub")
+
     fig, axarr = plt.subplots(1, 2, gridspec_kw=dict(hspace=0, wspace=0), sharex=True, sharey=True, figsize=(7, 4))
         
     params = dict(size=3, show=False, alpha=1., legend_fontsize=8)
@@ -79,6 +45,8 @@ def figure_1c():
 
 
 def figure_1d():
+    full_no_dub = load_adata("global_no_dub")
+
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4))
     axs = (ax1, ax2)
 
@@ -110,7 +78,36 @@ def figure_1d():
     save_figure(fig, "figure_01", "fig1_qc-histograms")
 
 
+def figure_1e():
+    full_no_dub = load_adata("global_no_dub")
+
+    full_markers = load_markers("global")
+    full_heatmap_data, full_col_colors, full_row_colors = get_heatmap_data(
+        full_no_dub, full_markers, "cluster_revised", main_palette
+    )
+    cg = sns.clustermap(
+        full_heatmap_data, z_score=0, vmin=-3, vmax=3, cmap=heatmap_cmap,
+        xticklabels=False, yticklabels=False,
+        row_cluster=False, col_cluster=False,
+        col_colors=full_col_colors, 
+        row_colors=full_row_colors,
+        robust=True, figsize=(4, 4), cbar_kws=dict(use_gridspec=True)
+    )
+    cg.ax_row_colors.set_ylabel("Genes", size="small")
+    cg.ax_col_colors.set_title("Cells", size="small", zorder=100)
+
+    fix_heatmap_colorbar(cg, full_no_dub, full_heatmap_data, heatmap_cmap)
+
+    cg.ax_col_colors.xaxis.tick_top()
+
+    #cg.fig.tight_layout(rect=(0.025, 0.025, 0.975, 0.975))
+    fix_heatmap_annotations(cg)
+    save_figure(cg.fig, "figure_01", "fig1_main-heatmap", dpi=600, ext="png")
+
+
 def figure_1f():
+    full_no_dub = load_adata("global_no_dub")
+
     fig, ax = plt.subplots(1, 1, figsize=(4, 4))
     sc.pl.umap(
         full_no_dub, 
@@ -126,46 +123,11 @@ def figure_1f():
     sns.despine(fig)
     fix_aspect_scatter_with_legend(fig)
     fig.tight_layout(rect=(0.025, 0.025, 0.975, 0.975))
-    save_figure(fig, "figure_01", "fig1_all-clusters")
-
-
-def figure_1e():
-    full_markers = sc.tl.find_marker_genes(full_no_dub, "cluster_revised", log_fold_change=0.75)
-    full_heatmap_data, full_col_colors, full_row_colors = get_heatmap_data(
-        full_no_dub, full_markers, "cluster_revised", main_palette
-    )
-    cg = sns.clustermap(
-        full_heatmap_data, z_score=0, vmin=-3, vmax=3, cmap=heatmap_cmap,
-        xticklabels=False, yticklabels=False,
-        row_cluster=False, col_cluster=False,
-        col_colors=full_col_colors, 
-        row_colors=full_row_colors,
-        robust=True, figsize=(4, 4), cbar_kws=dict(use_gridspec=True)
-    )
-    cg.ax_row_colors.set_ylabel("Genes", size="small")
-    cg.ax_col_colors.set_title("Cells", size="small", zorder=100)
-
-    fix_heatmap_colorbar(cg, full_no_dub, full_heatmap_data, cmap=heatmap_cmap)
-
-    cg.ax_col_colors.xaxis.tick_top()
-
-    cg.fig.tight_layout(rect=(0.025, 0.025, 0.975, 0.975))
-    fix_heatmap_annotations(cg)
-    save_figure(cg.fig, "figure_01", "fig1_main-heatmap", dpi=600, ext="png")
+    save_figure(fig, "figure_01", "fig1f_all-clusters")
 
 
 def figure_2a():
-    from sklearn.mixture import GaussianMixture
-    mixture = GaussianMixture(n_components=3, random_state=3)
-    mixture.fit(neuronal_final[:, ["Slc17a6", "Slc32a1", "Hdc"]].X.toarray())
-    gaba_vs_glut_vs_hdc = mixture.predict(neuronal_final[:, ["Slc17a6", "Slc32a1", "Hdc"]].X.toarray())
-
-    neuronal_final.obs["gaba_vs_glut_vs_hdc"] = gaba_vs_glut_vs_hdc
-    neuronal_final.obs["gaba_vs_glut_vs_hdc_cluster"] = neuronal_final.obs.groupby("cluster_revised")["gaba_vs_glut_vs_hdc"].transform(np.mean).round().astype(int).map({
-        0: "HA", 2: "Glut", 1: "GABA"
-    })
-    gaba_vs_glut_palette = sns.xkcd_palette(["light red", "medium blue", "electric purple", "light grey"])
-    gaba_vs_glut_vs_hdc_palette = sns.xkcd_palette(["yellow orange", "medium blue", "tree green"])
+    neuronal_final = load_adata("neuronal")
 
     gs = plt.GridSpec(1, 5)
     fig = plt.figure(figsize=(18, 4))
@@ -183,7 +145,7 @@ def figure_2a():
         ax.text(0.05, 0.95, gene, ha="left", va="top", size="large", transform=ax.transAxes)
 
     sc.pl.umap(
-        neuronal_final, color="gaba_vs_glut_vs_hdc_cluster", 
+        neuronal_final, color="classification", 
         ax=ax6, show=False, title="", legend_loc="right margin",
         palette=gaba_vs_glut_vs_hdc_palette,
         size=10
@@ -208,10 +170,11 @@ def figure_2a():
     ax6.yaxis.set_label_position("right")
 
     fig.subplots_adjust(wspace=0.0)
-    save_figure(fig, "figure_03", "fig3_gaba-vs-glut")
+    save_figure(fig, "figure_02", "fig2_gaba-vs-glut")
 
 
 def figure_2b():
+    neuronal_final = load_adata("neuronal")
     fig, ax = plt.subplots(1, 1, figsize=(8, 8))
 
     sc.pl.umap(
@@ -221,11 +184,12 @@ def figure_2b():
     ax.legend(bbox_to_anchor=(1.0, 0.5), loc="center left", ncol=1, frameon=False)
     fix_aspect_scatter_with_legend(fig)
     fig.tight_layout(rect=(0.025, 0.025, 0.975, 0.975))
-    save_figure(fig, "figure_03", "fig3_neuronal-clusters")
+    save_figure(fig, "figure_02", "fig2_neuronal-clusters")
 
 
 def figure_2c():
-    neuronal_marker_gene_list = sc.tl.find_marker_genes(neuronal_final, cluster_key="cluster_revised", log_fold_change=0.7)
+    neuronal_final = load_adata("neuronal")
+    neuronal_marker_gene_list = load_markers("neuronal")
 
     neuronal_heatmap_data, neuronal_col_colors, neuronal_row_colors = get_heatmap_data(
         neuronal_final, neuronal_marker_gene_list, "cluster_revised", neuronal_palette
@@ -245,32 +209,13 @@ def figure_2c():
 
     fix_heatmap_colorbar(cg, neuronal_final, neuronal_heatmap_data, heatmap_cmap)
 
-    cg.fig.tight_layout(rect=(0.025, 0.025, 0.975, 0.975))
+    #cg.fig.tight_layout(rect=(0.025, 0.025, 0.975, 0.975))
     fix_heatmap_annotations(cg)
-    save_figure(cg.fig, "figure_03", "fig3_neuronal-heatmap", dpi=600, ext="png")
-
-    fig, ax = plt.subplots(figsize=(1, 1.5))
-    for k, (cluster, inds) in enumerate(neuronal_final.obs.groupby("cluster_revised")):
-        x, y = neuronal_final[inds.index, :].obsm["X_umap"].T
-        ax.scatter(x, y, c=neuronal_palette[k], marker="s", label=cluster)
-    leg = fig.legend(
-        *ax.get_legend_handles_labels(), 
-        frameon=False, 
-        markerscale=1.1, 
-        scatteryoffsets=[0.5], 
-        fontsize="xx-small", 
-        ncol=2,
-        handletextpad=0.5
-    )
-    for t in leg.get_texts():
-        t.set_va("baseline")
-    ax.clear()
-    ax.set_axis_off()
-    fig.tight_layout()
-    save_figure(fig, "neuronal-heatmap-legend")
+    save_figure(cg.fig, "figure_02", "fig2_neuronal-heatmap", dpi=600, ext="png")
 
 
 def figure_2d():
+    neuronal_final = load_adata("neuronal")
     neuronal_violin_genes = pd.Index([
         "Slc17a6", "Slc32a1", "Gad1", "Gad2",
         "Nts", "Gpr83", "Onecut2", "Cox6a2", "Tac2", "Synpr", "Ar", "Nr4a2",
@@ -280,27 +225,30 @@ def figure_2d():
 
     marker_violins(
         neuronal_final, neuronal_violin_genes, "cluster_revised", neuronal_palette,
-        filename="fig3_neuronal-marker-violins_v2", figdir="figure_03"
+        filename="fig2_neuronal-marker-violins", figdir="figure_02"
     )
 
 
 def figure_2e():
+    neuronal_final = load_adata("neuronal")
     genes_umi_violins(
         neuronal_final, "cluster_revised", neuronal_palette, 
-        filename="fig3_neuronal-umi-genes-violins_v2", figdir="figure_03",
+        filename="fig2_neuronal-umi-genes-violins", figdir="figure_02",
         ylims=[80000, 10000]
     )
 
 
 def figure_3a():
+    neuronal_final = load_adata("neuronal")
     genes = ["Tac1", "Nos1", "Calb2", "Foxp2"]
     scatter_2by2(
         neuronal_final, genes, 
-        filename="fig4_premammillary-cluster7-umap-markers", figdir="figure_04", add_marker_edges=False
+        filename="fig3_glut7-umap-markers", figdir="figure_03", add_marker_edges=False
     )
 
 
-def figure_3b():
+def figure_3c():
+    neuronal_final = load_adata("neuronal")
     premammillary_cluster7_violin_genes = pd.Index([
         "Slc32a1", "Slc17a6", "Calb2", "Foxp2", "Htr2c", "Nos1", "Glra3",
         "Tac1", "C1ql3", "Irs4",
@@ -308,51 +256,57 @@ def figure_3b():
 
     marker_violins(
         neuronal_final, premammillary_cluster7_violin_genes, "cluster_revised", neuronal_palette,
-        filename="fig4_premammillary-cluster7-marker-violins", figdir="figure_04",
+        filename="fig3_glut7-marker-violins", figdir="figure_03",
     )
 
 
 def figure_3e():
-    cluster_7_markers = "Tac1, Slc17a6, Slc6a3, Ddc, Slc18a2, Th".split(", ")
+    neuronal_final = load_adata("neuronal")
+    cluster_7_markers = "Slc17a6, Slc18a2, Slc6a3, Ddc, Th".split(", ")
 
     scatter_2by3(
         neuronal_final, cluster_7_markers, 
-        filename="fig4_cluster7-umap-markers", figdir="figure_04", 
+        filename="fig3_glut7-umap-markers", figdir="figure_03", 
         add_marker_edges=False, selection=neuronal_final.obs.cluster_revised.isin(["7"]),
         label_va="top", label_ha="right"
     )
 
 
 def figure_4a():
+    neuronal_final = load_adata("neuronal")
     genes = ["Hdc", "Slc18a2", "Wif1", "Maob"]
     scatter_2by2(
         neuronal_final, genes, 
-        filename="fig5_tuberomammillary-umap-markers", figdir="figure_05", add_marker_edges=False
+        filename="fig4_tuberomammillary-umap-markers", figdir="figure_04", add_marker_edges=False
     )
 
 
-def figure_4c():
+def figure_4b():
+    neuronal_final = load_adata("neuronal")
     tuberomammillary_violin_genes = pd.Index([
         "Slc32a1", "Slc17a6", "Gad1", 
         "Slc18a2", "Hdc", "Wif1",
-        "Maoa", "Maob", "Msrb2", "Itm2a",
-        "Tspan12", "Bsx", "Prph", "Sncg",
+        "Maoa", "Maob", "Msrb2", "Itm2a", "Hcrtr2", "Hrh3", 
+        "Bsx", "Tspan12", "Prph", 
+        "Sncg",
     ])
 
     marker_violins(
         neuronal_final, tuberomammillary_violin_genes, "cluster_revised", neuronal_palette,
-        filename="fig5_tuberomammillary-marker-violins", figdir="figure_05"
+        filename="fig4_tuberomammillary-marker-violins", figdir="figure_04"
     )
 
 
 def figure_5a():
+    neuronal_final = load_adata("neuronal")
     genes = ["Tac2", "Tcf4", "Cplx1", "Pvalb"]
     scatter_2by2(
         neuronal_final, genes, 
-        "fig6_lateral-mammillary-umap-markers", figdir="figure_06", add_marker_edges=False
+        "fig5_lateral-mammillary-umap-markers", figdir="figure_05", add_marker_edges=False
     )
 
 def figure_5b():
+    neuronal_final = load_adata("neuronal")
     lateral_mammillary_violin_genes = pd.Index([
         "Slc32a1", "Slc17a6", "Tac2", 
         "Tcf4", "Pvalb",
@@ -364,33 +318,36 @@ def figure_5b():
 
     marker_violins(
         neuronal_final, lateral_mammillary_violin_genes, "cluster_revised", neuronal_palette,
-        filename="fig6_lateral-mammillary-marker-violins", figdir="figure_06"
+        filename="fig5_lateral-mammillary-marker-violins", figdir="figure_05"
     )
 
 
 def figure_6a():
+    neuronal_final = load_adata("neuronal")
     genes = ["Cartpt", "Foxb1", "Cck", "Adcyap1"]
     scatter_2by2(
         neuronal_final, genes, 
-        filename="fig7_mammillary-umap-global-markers", figdir="figure_07", add_marker_edges=False
+        filename="fig6_umap-global-markers", figdir="figure_06", add_marker_edges=False
     )
 
 
 def figure_6b():
+    neuronal_final = load_adata("neuronal")
     mammillary_violin_genes = pd.Index([
         "Slc32a1", "Slc17a6",
         "Ctxn3", "Gpr83", "Rprm",  
         "Cck", "Adcyap1", "Fam19a1", "Slc24a2", "Foxb1",
-        "Cpne9", "Cox6a2", "Cnih3", "Pvalb", 
+        "Cpne9", "Cox6a2", "Cnih3", "Pvalb", "Cartpt",
         "Nts", "Onecut2", "Tac2",  "Cxcl14",
     ])
 
     marker_violins(
         neuronal_final, mammillary_violin_genes, "cluster_revised", neuronal_palette,
-        filename="fig7_mammillary-marker-violins_v2", figdir="figure_07"
+        filename="fig6_marker-violins", figdir="figure_06"
     )
 
 def figure_7a():
+    neuronal_final = load_adata("neuronal")
     fig, ax = plt.subplots(1, 1, figsize=(4, 4))
     sc.pl.umap(
         neuronal_final[neuronal_final.obs.cluster_revised.isin(list("12345"))], 
@@ -431,6 +388,7 @@ def figure_7b():
         smoothed = convolve(data, weights, mode='constant')
         return smoothed, col_colors, row_colors
 
+    neuronal_final = load_adata("neuronal")
     mammillary = neuronal_final[neuronal_final.obs.cluster_revised.isin(list("12345")), :].copy()
     mammillary_heatmap_genes = pd.Index([
         "Nts", "Alcam", "Col25a1", "Ctxn3", 
@@ -465,57 +423,43 @@ def figure_7b():
     fix_heatmap_colorbar(cg, mammillary, mammillary_heatmap_data, heatmap_cmap)
     cg.fig.subplots_adjust(right=0.78)
 
-    cg.fig.tight_layout(rect=(0.025, 0.025, 0.975, 0.975))
+    #cg.fig.tight_layout(rect=(0.025, 0.025, 0.975, 0.975))
     fix_heatmap_annotations(cg)
-    save_figure(cg.fig, "last_minute", "fig7_mammillary-heatmap", dpi=600, ext="png")
+    save_figure(cg.fig, "figure_07", "fig7_mammillary-heatmap", dpi=600, ext="png")
 
 
 def figure_7c():
-    genes = ["Col25a1", "Onecut2", "Calb1", "Alcam"]
-    scatter_2by2(
-        neuronal_final, genes, 
-        filename="fig7_mammillary-umap-subpopulation-markers-add1", figdir="figure_07", add_marker_edges=False,
-        selection=neuronal_final.obs.cluster_revised.isin(list("12345")), label_va="bottom"
-    )
-    genes = ["Gpr83", "Spock3", "Serpini1", "Cxcl14"]
-    scatter_2by2(
-        neuronal_final, genes, 
-        filename="fig7_mammillary-umap-subpopulation-markers-add2", figdir="figure_07", add_marker_edges=False,
-        selection=neuronal_final.obs.cluster_revised.isin(list("12345")), label_va="bottom"
-    )
-    genes = ["Pvalb", "Slc24a2", "Nos1", "Calb1"]
-    scatter_2by2(
-        neuronal_final, genes, 
-        filename="fig7_mammillary-umap-subpopulation-markers-slc24a2", figdir="last_minute", add_marker_edges=False,
+    neuronal_final = load_adata("neuronal")
+    params = dict(
+        figdir="figure_07", add_marker_edges=False,
         selection=neuronal_final.obs.cluster_revised.isin(list("12345")), label_va="bottom"
     )
 
-
-
-
-
-def fix_heatmap_colorbar(cg, heatmap_data):
-    # remove shitty stuff
-    cg.cax.remove()
-    cg.ax_col_dendrogram.remove()
-    cg.ax_row_dendrogram.remove()
-    cg.fig.tight_layout()
-    
-    # here's the hack
-    big_bbox = cg.ax_heatmap.get_position()
-    height = big_bbox.y1 - big_bbox.y0
-    
-    cg.fig.subplots_adjust(right=0.9)
-    new_cbar_ax = cg.fig.add_axes([0.91, 0.125, 0.025, height])
-    _fig, _ax = plt.subplots(figsize=(0.1, 0.1))
-    sns.heatmap(heatmap_data, vmin=-3, vmax=3, cmap="vlag", ax=_ax, cbar_ax=new_cbar_ax)
-    _ax.remove()
-    
-    new_cbar_ax.tick_params(axis="y", labelsize="xx-small", length=2, width=0.3)
-    new_cbar_ax.set_ylabel("Z-score transformed log(UMI + 1)", size="xx-small")
-
-
-
+    scatter_1by2(
+        neuronal_final, ["Nts", "Col25a1"], 
+        filename="fig7_mammillary-umap-subpopulation-markers_glut1", 
+        **params
+    )
+    scatter_1by2(
+        neuronal_final, ["Gpr83", "Spock3"], 
+        filename="fig7_mammillary-umap-subpopulation-markers_glut2", 
+        **params
+    )
+    scatter_1by2(
+        neuronal_final, ["Pvalb", "Slc24a2"], 
+        filename="fig7_mammillary-umap-subpopulation-markers_glut3", 
+        **params
+    )
+    scatter_1by2(
+        neuronal_final, ["Nos1", "Calb1"], 
+        filename="fig7_mammillary-umap-subpopulation-markers_glut4", 
+        **params
+    )
+    scatter_1by2(
+        neuronal_final, ["Tac2", "Cxcl14"], 
+        filename="fig7_mammillary-umap-subpopulation-markers_glut5", 
+        **params
+    )
 
 
 # ## LAST MINUTE FIGURES
@@ -531,42 +475,42 @@ def fix_heatmap_colorbar(cg, heatmap_data):
 
 
 # FIGURE 4B
-tuberomammillary_violin_genes = pd.Index([
-    "Slc32a1", "Slc17a6", "Gad1", 
-    "Slc18a2", "Hdc", "Wif1",
-    "Maoa", "Maob", "Msrb2", "Itm2a", "Hcrtr2", "Hrh3", 
-    "Bsx", "Tspan12", "Prph", 
-    "Sncg",
-])
-
-marker_violins(
-    neuronal_final, tuberomammillary_violin_genes, "cluster_revised", neuronal_palette,
-    filename="fig4_tuberomammillary-marker-violins", figdir="last_minute"
-)
-
-#FIGURE 6B
-mammillary_violin_genes = pd.Index([
-    "Slc32a1", "Slc17a6",
-    "Ctxn3", "Gpr83", "Rprm",  
-    "Cck", "Adcyap1", "Fam19a1", "Slc24a2", "Foxb1",
-    "Cpne9", "Cox6a2", "Cnih3", "Pvalb", "Cartpt",
-    "Nts", "Onecut2", "Tac2",  "Cxcl14",
-])
-
-marker_violins(
-    neuronal_final, mammillary_violin_genes, "cluster_revised", neuronal_palette,
-    filename="fig7_mammillary-marker-violins", figdir="last_minute"
-)
-
-genes = ["Pvalb", "Slc24a2", "Nos1", "Calb1"]
-scatter_2by2(
-    neuronal_final, genes, 
-    filename="fig7_mammillary-umap-subpopulation-markers-slc24a2", figdir="last_minute", add_marker_edges=False,
-    selection=neuronal_final.obs.cluster_revised.isin(list("12345")), label_va="bottom"
-)
-
-genes = ["Cck", "Synpr", "Nxph1", "Tac1", "Nos1", "Ar"]
-scatter_2by3(
-    neuronal_final, genes, 
-    filename="fig4_premammillary-umap-markers", figdir="last_minute", add_marker_edges=False
-)
+#tuberomammillary_violin_genes = pd.Index([
+#    "Slc32a1", "Slc17a6", "Gad1", 
+#    "Slc18a2", "Hdc", "Wif1",
+#    "Maoa", "Maob", "Msrb2", "Itm2a", "Hcrtr2", "Hrh3", 
+#    "Bsx", "Tspan12", "Prph", 
+#    "Sncg",
+#])
+#
+#marker_violins(
+#    neuronal_final, tuberomammillary_violin_genes, "cluster_revised", neuronal_palette,
+#    filename="fig4_tuberomammillary-marker-violins", figdir="last_minute"
+#)
+#
+##FIGURE 6B
+#mammillary_violin_genes = pd.Index([
+#    "Slc32a1", "Slc17a6",
+#    "Ctxn3", "Gpr83", "Rprm",  
+#    "Cck", "Adcyap1", "Fam19a1", "Slc24a2", "Foxb1",
+#    "Cpne9", "Cox6a2", "Cnih3", "Pvalb", "Cartpt",
+#    "Nts", "Onecut2", "Tac2",  "Cxcl14",
+#])
+#
+#marker_violins(
+#    neuronal_final, mammillary_violin_genes, "cluster_revised", neuronal_palette,
+#    filename="fig7_mammillary-marker-violins", figdir="last_minute"
+#)
+#
+#genes = ["Pvalb", "Slc24a2", "Nos1", "Calb1"]
+#scatter_2by2(
+#    neuronal_final, genes, 
+#    filename="fig7_mammillary-umap-subpopulation-markers-slc24a2", figdir="last_minute", add_marker_edges=False,
+#    selection=neuronal_final.obs.cluster_revised.isin(list("12345")), label_va="bottom"
+#)
+#
+#genes = ["Cck", "Synpr", "Nxph1", "Tac1", "Nos1", "Ar"]
+#scatter_2by3(
+#    neuronal_final, genes, 
+#    filename="fig4_premammillary-umap-markers", figdir="last_minute", add_marker_edges=False
+#)
