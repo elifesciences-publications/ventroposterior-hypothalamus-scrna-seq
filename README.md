@@ -73,7 +73,9 @@ unzip h5ad.zip
 ### Running the notebooks
 
 ```bash
-jupyter
+jupyter notebook notebooks/main_figures.ipynb
+jupyter notebook notebooks/si_figures.ipynb
+jupyter notebook notebooks/extra_figures.ipynb
 ```
 
 
