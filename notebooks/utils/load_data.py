@@ -43,7 +43,7 @@ def save_figure(fig, pdir, name, dpi=600, ext="pdf"):
     pout = FIG_PATH / pdir
     if not pout.exists():
         pout.mkdir()
-    fig.savefig(out, dpi=dpi)#, bbox="tight")
+    fig.savefig(out, dpi=dpi)  # , bbox="tight")
     print(f"Saved to {out.name}")
 
 
