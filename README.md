@@ -41,7 +41,11 @@ When using the Loupe files, note the following:
 The manuscript figures were generated as individual panels which were then
 combined in Adobe Illustrator.  However, the individual panels showing scRNA-seq
 can be regenerated using notebooks in `notebooks/` and associated utility
-scripts.
+scripts.  You can view those directly here:
+
+-   [Main figures][main-notebook]
+-   [SI figures][si-notebook]
+-   [Extra figures][extra-notebook]
 
 ### Requirements
 
@@ -82,3 +86,6 @@ jupyter notebook notebooks/extra_figures.ipynb
 [loupe-link]: https://support.10xgenomics.com/spatial-gene-expression/software/downloads/latest
 [ftp-link]: ftp://ftp.jax.org/flynnb/mickelsen-vph-2020/
 [ftp-loupe-link]: ftp://ftp.jax.org/flynnb/mickelsen-vph-2020/loupe.zip
+[main-notebook]: https://github.com/TheJacksonLaboratory/ventroposterior-hypothalamus-scrna-seq/blob/master/notebooks/main_figures.ipynb
+[si-notebook]: https://github.com/TheJacksonLaboratory/ventroposterior-hypothalamus-scrna-seq/blob/master/notebooks/si_figures.ipynb
+[extra-notebook]: https://github.com/TheJacksonLaboratory/ventroposterior-hypothalamus-scrna-seq/blob/master/notebooks/extra_figures.ipynb
