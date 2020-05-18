@@ -1,5 +1,21 @@
 # Mickelsen et al 2020 scRNA-seq of the Ventroposterior Hypothalamus
 
+This repository accompanies the preprint [L.E. Mickelsen, W.F. Flynn, et
+al.][biorxiv-preprint].
+
+> Laura E Mickelsen, William F Flynn, Kristen Springer, Lydia Wilson, Eric J
+> Beltrami, Mohan Bolisetty,  Paul F Robson, Alexander C Jackson. "Cellular
+> taxonomy and spatial organization of the murine ventral posterior
+> hypothalamus." (2020)
+
+## Current Status
+
+-   Manuscript: [public][biorxiv-preprint]
+-   Raw Data: [embargoed][geo-link]
+-   Analysis/Figure code: public (here!), analysis code will be committed shortly
+-   Finalized h5ad files: [embargoed][ftp-link]
+-   Finalized Loupe Cell Browser files: [embargoed][ftp-link]
+
 ## Sample descriptions
 
 Ventral posterior hypothalamus microdissections were harvested from four (4)
@@ -35,6 +51,12 @@ When using the Loupe files, note the following:
 
 
 ## Overview of the analysis
+
+## Analysis code
+
+Most of the original analysis was done with Scanpy v1.3.7.  However, I have
+updated the majority of the analysis to be compatible with Scanpy v1.4+.
+Currently finishing that effort up now.
 
 ## Reproducing manuscript figures
 
@@ -89,3 +111,5 @@ jupyter notebook notebooks/extra_figures.ipynb
 [main-notebook]: https://github.com/TheJacksonLaboratory/ventroposterior-hypothalamus-scrna-seq/blob/master/notebooks/main_figures.ipynb
 [si-notebook]: https://github.com/TheJacksonLaboratory/ventroposterior-hypothalamus-scrna-seq/blob/master/notebooks/si_figures.ipynb
 [extra-notebook]: https://github.com/TheJacksonLaboratory/ventroposterior-hypothalamus-scrna-seq/blob/master/notebooks/extra_figures.ipynb
+[biorxiv-preprint]: https://doi.org/10.1101/2020.05.14.096818
+[geo-link]: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE146692
