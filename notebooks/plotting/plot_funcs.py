@@ -292,10 +292,13 @@ def marker_violins(
             gene, rotation=0, ha="right", va="top", size="small", style="italic"
         )
         ax.set_yticks([])
+
         ax.set_ylim(0, ax.get_ylim()[1])
 
         if k < (L - 1):
             ax.set_xticks([])
+            ax.set_xlabel(None)
+            ax.xaxis.label.set_visible(False)
         else:
             ax.xaxis.set_tick_params(labelsize="small")
         sns.despine(ax=ax, left=True)

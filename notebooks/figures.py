@@ -365,12 +365,13 @@ def figure_3a():
     )
 
 
-def figure_3c():
+def figure_3b():
     neuronal_final = load_adata("neuronal")
     premammillary_cluster7_violin_genes = pd.Index(
         [
             "Slc32a1",
             "Slc17a6",
+            "Adcyap1",
             "Calb2",
             "Foxp2",
             "Htr2c",
@@ -400,6 +401,16 @@ def figure_3e():
         neuronal_final,
         cluster_7_markers,
         filename="fig3_glut7-umap-markers",
+        figdir="figure_03",
+        add_marker_edges=False,
+        selection=neuronal_final.obs.cluster_revised.isin(["7"]),
+        label_va="top",
+        label_ha="right",
+    )
+    scatter_1by2(
+        neuronal_final,
+        ["Tac1", "Adcyap1"],
+        filename="fig3_glut7-umap-markers2",
         figdir="figure_03",
         add_marker_edges=False,
         selection=neuronal_final.obs.cluster_revised.isin(["7"]),

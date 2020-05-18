@@ -504,6 +504,8 @@ def figure_S7b():
             "Slc17a6",
             "Foxb1",
             "Cck",
+            "Stxbp6",
+            "Ebf3", 
             "Dlk1",
             "Synpr",
             "Spock1",
@@ -526,3 +528,30 @@ def figure_S7b():
         filename="figS7b_premammillary-marker-violins",
         figdir="figure_S07",
     )
+
+def figure_S8():
+    neuronal_final = load_adata("neuronal")
+
+    genes = pd.Index([
+        "Rprm", "Pitx2", "Cdh11",
+        "Cpne9", "Gpr83", "Sim1",
+        "Ctxn3", "Lhx1", "Sim2",
+        "Fam19a1", "Lhx5", "Nr4a2",
+        "Nkx2-1",
+    ])
+
+    for gene in genes:
+        fig, ax = plt.subplots(figsize=(2, 2))
+        sc.pl.umap(
+            neuronal_final, color=gene, 
+            size=3, cmap=red_colormap, title="",
+            ax=ax, show=False, use_raw=False
+        )
+        fig.delaxes(fig.get_children()[-1])
+        ax.text(0.025, 0.975, gene, ha="left", va="top", size="small", style="italic", transform=ax.transAxes)
+        ax.set_xlabel("")
+        ax.set_ylabel("")
+        fix_aspect_scatter_with_legend(fig)
+
+        save_figure(fig, "figure_S08", f"fig_S8_neuronal-UMAP_{gene}")
+        del fig
