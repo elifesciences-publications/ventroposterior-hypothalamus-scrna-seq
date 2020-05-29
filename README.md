@@ -12,9 +12,16 @@ al.][biorxiv-preprint].
 
 -   Manuscript: [public][biorxiv-preprint]
 -   Raw Data: [embargoed][geo-link]
--   Analysis/Figure code: public (here!), analysis code will be committed shortly
+-   Figure code: public (here!)
+-   Analysis code: public-ish. 
 -   Finalized h5ad files: [embargoed][ftp-link]
 -   Finalized Loupe Cell Browser files: [embargoed][ftp-link]
+
+Note on analysis code:  The original analysis code makes heavy use of a custom
+wrapper around ScanPy 1.3.7 that can be found [here][scanpy_recipes].  This
+version of the code is largely readable but not functional unless you install
+`scanpy_recipes`.  In order to make this work more accessible, I am porting the
+analysis code to ScanPy 1.4.5+ but this is a work in progres.
 
 ## Sample descriptions
 
@@ -113,3 +120,4 @@ jupyter notebook notebooks/extra_figures.ipynb
 [extra-notebook]: https://github.com/TheJacksonLaboratory/ventroposterior-hypothalamus-scrna-seq/blob/master/notebooks/extra_figures.ipynb
 [biorxiv-preprint]: https://doi.org/10.1101/2020.05.14.096818
 [geo-link]: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE146692
+[scanpy-recipes]: https://github.com/TheJacksonLaboratory/scanpy_recipes
