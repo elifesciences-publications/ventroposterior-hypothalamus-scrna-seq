@@ -272,7 +272,8 @@ def marker_violins(
     figdir=None,
 ):
     L = len(genes)
-    fig, axs = plt.subplots(L, 1, figsize=(4, 0.32 * L))
+    N = len(adata.obs[cluster_key].unique())
+    fig, axs = plt.subplots(L, 1, figsize=(0.5 + 0.25*N, 0.32 * L))
     violin_data = pd.DataFrame(adata[:, genes].X.toarray(), columns=genes)
     violin_data[cluster_name] = adata.obs[cluster_key].values
 
