@@ -4,24 +4,25 @@ This repository accompanies the preprint [L.E. Mickelsen, W.F. Flynn, et
 al.][biorxiv-preprint].
 
 > Laura E Mickelsen, William F Flynn, Kristen Springer, Lydia Wilson, Eric J
-> Beltrami, Mohan Bolisetty,  Paul F Robson, Alexander C Jackson. "Cellular
+> Beltrami, Mohan Bolisetty,  Paul Robson, Alexander C Jackson. "Cellular
 > taxonomy and spatial organization of the murine ventral posterior
-> hypothalamus." (2020)
+> hypothalamus." eLife (2020)
 
 ## Current Status
 
 -   Manuscript: [public][biorxiv-preprint]
--   Raw Data: [embargoed][geo-link]
+-   Raw Data: [public][geo-link]
 -   Figure code: public (here!)
--   Analysis code: public-ish. 
--   Finalized h5ad files: [embargoed][ftp-link]
--   Finalized Loupe Cell Browser files: [embargoed][ftp-link]
+-   Analysis code: public-ish (here!). 
+-   Finalized h5ad files: [public][jax-link]
+-   Finalized Loupe Cell Browser files: [public][jax-link]
+-   Marker genes for every cluster and subcluster: [public][jax-link]
 
 *Note on analysis code*:  The original analysis code makes heavy use of a custom
 wrapper around Scanpy 1.3.7 that can be found [here][scanpy-recipes].  This
 version of the code is largely readable but not functional unless you install
 `scanpy_recipes`.  In order to make this work more accessible, I am porting the
-analysis code to Scanpy 1.4.5+ but this is a work in progres.
+analysis code to Scanpy 1.4.5+ but this is a work in progress.
 
 ## Sample descriptions
 
@@ -42,7 +43,7 @@ You can interactively analyze the resulting aggregated data using the [10X
 Loupe Browser][loupe-link] by downloading `.cloupe` files we've prepared using
 our datasets.  Those data will be available for download here:
 ```
-ftp://ftp.jax.org/flynnb/mickelsen-vph-2020/loupe.zip
+https://singlecell.jax.org/hypothalamus
 ```
 
 We have provided 3 Loupe files for the aggregated global clustering, neuronal
@@ -117,8 +118,7 @@ jupyter notebook notebooks/extra_figures.ipynb
 
 
 [loupe-link]: https://support.10xgenomics.com/spatial-gene-expression/software/downloads/latest
-[ftp-link]: ftp://ftp.jax.org/flynnb/mickelsen-vph-2020/
-[ftp-loupe-link]: ftp://ftp.jax.org/flynnb/mickelsen-vph-2020/loupe.zip
+[jax-link]: https://singlecell.jax.org/hypothalamus
 [main-notebook]: https://github.com/TheJacksonLaboratory/ventroposterior-hypothalamus-scrna-seq/blob/master/notebooks/main_figures.ipynb
 [si-notebook]: https://github.com/TheJacksonLaboratory/ventroposterior-hypothalamus-scrna-seq/blob/master/notebooks/si_figures.ipynb
 [extra-notebook]: https://github.com/TheJacksonLaboratory/ventroposterior-hypothalamus-scrna-seq/blob/master/notebooks/extra_figures.ipynb
