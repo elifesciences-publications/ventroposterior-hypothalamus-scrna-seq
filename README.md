@@ -1,3 +1,9 @@
+This code is associated with the paper from Mickelsen et al., "Cellular taxonomy and spatial
+organization of the murine ventral
+posterior hypothalamus". eLife, 2020. http://doi.org/10.7554/eLife.58901
+
+
+
 # Mickelsen et al 2020 scRNA-seq of the Ventroposterior Hypothalamus
 
 This repository accompanies the preprint [L.E. Mickelsen, W.F. Flynn, et
